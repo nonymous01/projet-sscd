@@ -140,8 +140,8 @@
     "user": "root",
     "cmd": "snapd",
     "state": "S",
-    "cpu_percent": 0.12,
-    "mem_percent": 27.97
+    "cpu_percent": 0.00,
+    "mem_percent": 28.90
   },
   {
     "pid": 244,
@@ -356,8 +356,8 @@
     "user": "youssef",
     "cmd": "node",
     "state": "S",
-    "cpu_percent": 0.25,
-    "mem_percent": 149.46
+    "cpu_percent": 0.13,
+    "mem_percent": 149.57
   },
   {
     "pid": 1839,
@@ -372,8 +372,8 @@
     "user": "youssef",
     "cmd": "node",
     "state": "S",
-    "cpu_percent": 0.00,
-    "mem_percent": 833.30
+    "cpu_percent": 0.13,
+    "mem_percent": 833.83
   },
   {
     "pid": 1952,
@@ -424,54 +424,6 @@
     "mem_percent": 0.04
   },
   {
-    "pid": 30031,
-    "user": "root",
-    "cmd": "SessionLeader",
-    "state": "S",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.04
-  },
-  {
-    "pid": 30032,
-    "user": "root",
-    "cmd": "Relay(30033",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.04
-  },
-  {
-    "pid": 30033,
-    "user": "youssef",
-    "cmd": "node",
-    "state": "S",
-    "cpu_percent": 0.12,
-    "mem_percent": 12.75
-  },
-  {
-    "pid": 30040,
-    "user": "root",
-    "cmd": "SessionLeader",
-    "state": "S",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.04
-  },
-  {
-    "pid": 30041,
-    "user": "root",
-    "cmd": "Relay(30042",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.04
-  },
-  {
-    "pid": 30042,
-    "user": "youssef",
-    "cmd": "node",
-    "state": "S",
-    "cpu_percent": 0.00,
-    "mem_percent": 12.74
-  },
-  {
     "pid": 30532,
     "user": "polkitd",
     "cmd": "polkitd",
@@ -485,7 +437,7 @@
     "cmd": "node",
     "state": "S",
     "cpu_percent": 0.00,
-    "mem_percent": 13.71
+    "mem_percent": 13.85
   },
   {
     "pid": 32125,
@@ -501,7 +453,7 @@
     "cmd": "node",
     "state": "S",
     "cpu_percent": 0.00,
-    "mem_percent": 164.33
+    "mem_percent": 166.79
   },
   {
     "pid": 32150,
@@ -532,67 +484,75 @@
     "user": "youssef",
     "cmd": "python3",
     "state": "S",
-    "cpu_percent": 0.37,
+    "cpu_percent": 0.50,
     "mem_percent": 6.86
   },
   {
-    "pid": 33647,
+    "pid": 60572,
+    "user": "root",
+    "cmd": "SessionLeader",
+    "state": "S",
+    "cpu_percent": 0.00,
+    "mem_percent": 0.04
+  },
+  {
+    "pid": 60573,
+    "user": "root",
+    "cmd": "Relay(60574",
+    "state": ")",
+    "cpu_percent": 0.00,
+    "mem_percent": 0.04
+  },
+  {
+    "pid": 60574,
+    "user": "youssef",
+    "cmd": "node",
+    "state": "S",
+    "cpu_percent": 0.00,
+    "mem_percent": 12.83
+  },
+  {
+    "pid": 60581,
+    "user": "root",
+    "cmd": "SessionLeader",
+    "state": "S",
+    "cpu_percent": 0.00,
+    "mem_percent": 0.04
+  },
+  {
+    "pid": 60582,
+    "user": "root",
+    "cmd": "Relay(60583",
+    "state": ")",
+    "cpu_percent": 0.00,
+    "mem_percent": 0.04
+  },
+  {
+    "pid": 60583,
+    "user": "youssef",
+    "cmd": "node",
+    "state": "S",
+    "cpu_percent": 0.00,
+    "mem_percent": 12.78
+  },
+  {
+    "pid": 60665,
+    "user": "youssef",
+    "cmd": "bash",
+    "state": "S",
+    "cpu_percent": 0.00,
+    "mem_percent": 0.08
+  },
+  {
+    "pid": 63172,
     "user": "youssef",
     "cmd": "python3",
     "state": "S",
-    "cpu_percent": 0.62,
-    "mem_percent": 10.59
+    "cpu_percent": 0.75,
+    "mem_percent": 9.65
   },
   {
-    "pid": 37590,
-    "user": "youssef",
-    "cmd": "sscd_superviseu",
-    "state": "S",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.97
-  },
-  {
-    "pid": 40607,
-    "user": "root",
-    "cmd": "(udev-worker",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.32
-  },
-  {
-    "pid": 40609,
-    "user": "root",
-    "cmd": "(udev-worker",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.32
-  },
-  {
-    "pid": 40630,
-    "user": "root",
-    "cmd": "(udev-worker",
-    "state": ")",
-    "cpu_percent": 0.25,
-    "mem_percent": 0.32
-  },
-  {
-    "pid": 40687,
-    "user": "root",
-    "cmd": "(udev-worker",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.32
-  },
-  {
-    "pid": 40757,
-    "user": "root",
-    "cmd": "(udev-worker",
-    "state": ")",
-    "cpu_percent": 0.00,
-    "mem_percent": 0.32
-  },
-  {
-    "pid": 41230,
+    "pid": 63444,
     "user": "youssef",
     "cmd": "moniteur_system",
     "state": "R",
