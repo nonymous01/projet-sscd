@@ -1,0 +1,26 @@
+#ifndef FIFO_H
+#define FIFO_H
+
+#define MAX_TASKS 100
+
+typedef enum { READY, RUNNING, WAITING, TERMINATED } process_state_t;
+
+typedef struct {
+    int pid;               // ID processus (simulé)
+    int burst_time;        // temps d'exécution total
+    int remaining_time;    // temps restant
+    process_state_t state; // état du processus
+    time_t start_time;     // timestamp début exécution
+    time_t end_time;       // timestamp fin exécution
+} process_t;
+
+typedef struct {
+    process_t tasks[MAX_TASKS];
+    int head;
+    int tail;
+    int count;
+} fifo_t;
+
+int ajouter_tache(fifo_t *fifo, int pid, int burst_time);
+
+#endif
