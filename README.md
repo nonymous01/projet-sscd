@@ -6,11 +6,13 @@ Ce projet simule un système de supervision et d’ordonnancement de tâches à 
 - Un ordonnanceur FIFO (`ordonnanceur_fifo`) qui lit et traite les tâches en mettant à jour un fichier JSON.
 - Un moniteur (`moniteur_systeme`) pour visualiser les informations système.
 - Un client (`ajout_tache`) permettant d’envoyer une tâche au superviseur.
+- Un dashboard web (`dashboard.py`) pour visualiser les données du système.
 
 ##  Prérequis
 
 - Linux (Debian/Mint/Ubuntu recommandé)
 - `gcc`, `make`
+- Python 3 avec `dash`, `pandas`, `flask`
 - Support des threads (`pthread`) et mémoire partagée (`sysv shm`)
 
 ##  Compilation
@@ -28,7 +30,7 @@ Les exécutables suivants seront générés :
 - `moniteur_systeme`
 - `ajout_tache`
 
-##  Lancement (3 terminaux recommandés)
+##  Lancement (4 terminaux recommandés)
 
 ### Terminal 1 – Superviseur
 
@@ -60,13 +62,24 @@ Exemple :
 
 Cela envoie une tâche PID=123 au superviseur.
 
-### (Optionnel) Terminal 4 – Moniteur Système
+### Terminal 4 – Dashboard Web (interface graphique)
+
+Active l’environnement Python virtuel puis exécute le dashboard :
 
 ```bash
-./moniteur_systeme
+source env/bin/activate
+python dashboard.py
 ```
 
-Affiche des informations sur les tâches et le système.
+Sortie attendue :
+
+```
+Dash is running on http://127.0.0.1:8050/
+ * Serving Flask app 'dashboard'
+ * Debug mode: on
+```
+
+Ouvre ensuite ton navigateur à [http://127.0.0.1:8050](http://127.0.0.1:8050) pour visualiser les tâches et les statistiques.
 
 ##  Fichier de sortie
 
@@ -89,10 +102,12 @@ projet-sscd/
 ├── superviseur/            # Superviseur serveur
 ├── moniteur/               # Moniteur système
 ├── tests/                  # Client ajout_tache
+├── dashboard.py            # Dashboard web Dash
 ├── ordonnanceur_output.json
 ├── Makefile
 └── README.md
 ```
 
 ---
+
 By Alien 👽
