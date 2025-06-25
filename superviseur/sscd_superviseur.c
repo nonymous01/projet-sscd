@@ -20,6 +20,8 @@
 #define SHM_KEY 0x1234
 
 int server_fd;
+int shmid;
+fifo_t *fifo = NULL;  // pointeur global FIFO partagée
 
 void log_message(const char *msg) {
     time_t now = time(NULL);
@@ -31,7 +33,11 @@ void log_message(const char *msg) {
 
 void handle_shutdown(int sig) {
     log_message("Signal d'arrêt reçu, fermeture du serveur...");
-    close(server_fd);
+    if (server_fd > 0) close(server_fd);
+    // Détacher la mémoire partagée
+    if (fifo != NULL) shmdt(fifo);
+    // Supprimer la mémoire partagée
+    shmctl(shmid, IPC_RMID, NULL);
     exit(0);
 }
 
@@ -52,41 +58,70 @@ void *handle_client(void *arg) {
         buffer[received] = '\0';
         printf("Message reçu du client : %s\n", buffer);
 
-        // Ajout dans la mémoire partagée
-        int shmid = shmget(SHM_KEY, sizeof(fifo_t), 0666);
-        if (shmid < 0) {
-            perror("shmget client");
-        } else {
-            fifo_t *fifo = (fifo_t *)shmat(shmid, NULL, 0);
-            if (fifo != (void *)-1) {
-                int val = atoi(buffer);
+        if (fifo != NULL) {
+            int val = atoi(buffer);
 
-                process_t proc;
-                proc.pid = val;
-                proc.burst_time = 10;
-                proc.remaining_time = 10;
-                proc.state = READY;
-                proc.start_time = 0;
-                proc.end_time = 0;
-                strcpy(proc.user, "unknown");
-                strcpy(proc.command, "commande");
-                proc.priority = 0;
-                proc.cpu_usage = 0.0;
-                proc.mem_usage = 0.0;
+            process_t proc;
+            proc.pid = val;
+            proc.burst_time = 10;
+            proc.remaining_time = 10;
+            proc.state = READY;
+            proc.start_time = 0;
+            proc.end_time = 0;
+            strcpy(proc.user, "unknown");
+            strcpy(proc.command, "commande");
+            proc.priority = 0;
+            proc.cpu_usage = 0.0;
+            proc.mem_usage = 0.0;
 
-                if (fifo_enqueue(fifo, proc) == 0) {
-                    printf("Tâche PID %d ajoutée à la file FIFO\n", val);
-                } else {
-                    printf("⚠️ File FIFO pleine, tâche rejetée\n");
+            if (fifo_enqueue(fifo, proc) == 0) {
+                printf("Tâche PID %d ajoutée à la file FIFO\n", val);
+
+                // === Mise à jour immédiate du fichier ordonnanceur_output.json ===
+                FILE *fp = fopen("ordonnanceur_output.json", "w");
+                if (fp) {
+                    fprintf(fp, "{\n");
+                    fprintf(fp, "  \"tasks_in_queue\": [");
+                    for (int i = 0; i < fifo->count; i++) {
+                        int idx = (fifo->front + i) % MAX_TASKS;
+                        fprintf(fp, "%d", fifo->tasks[idx].pid);
+                        if (i < fifo->count - 1) fprintf(fp, ", ");
+                    }
+                    fprintf(fp, "],\n");
+                    fprintf(fp, "  \"current_task\": null,\n");
+                    fprintf(fp, "  \"tasks_processed\": 0,\n");
+                    fprintf(fp, "  \"average_wait_time\": 0.00,\n");
+                    fprintf(fp, "  \"throughput\": 0.00\n");
+                    fprintf(fp, "}\n");
+                    fclose(fp);
                 }
-
-                shmdt(fifo);
+                // === Fin mise à jour JSON ===
+            } else {
+                printf("⚠️ File FIFO pleine, tâche rejetée\n");
             }
+        } else {
+            fprintf(stderr, "FIFO non attachée dans handle_client\n");
         }
     }
 
     send(client_sock, "ACK\n", 4, 0);
     close(client_sock);
+    pthread_exit(NULL);
+}
+
+
+// Thread ordonnanceur
+void *thread_ordonnanceur(void *arg) {
+    (void)arg; // non utilisé
+
+    // Ici tu appelles ta fonction ordonnanceur qui tourne en boucle
+    // Exemple hypothétique : ordonnanceur_fifo(fifo);
+
+    // Si ordonnanceur_fifo() ne prend pas d'argument, adapte le code
+    // Par exemple, tu peux modifier ordonnanceur_fifo() pour prendre fifo_t* en paramètre
+
+    ordonnanceur_fifo(fifo);  // <- à adapter selon ta fonction ordonnanceur
+
     pthread_exit(NULL);
 }
 
@@ -99,16 +134,28 @@ int main() {
     signal(SIGINT, handle_shutdown);
 
     // Création mémoire partagée
-    int shmid = shmget(SHM_KEY, sizeof(fifo_t), IPC_CREAT | 0666);
+    shmid = shmget(SHM_KEY, sizeof(fifo_t), IPC_CREAT | 0666);
     if (shmid < 0) {
         perror("shmget superviseur");
         exit(1);
     }
 
-    fifo_t *fifo = (fifo_t *)shmat(shmid, NULL, 0);
-    fifo_init(fifo);  // ✅ Initialisation correcte
-    shmdt(fifo);
+    fifo = (fifo_t *)shmat(shmid, NULL, 0);
+    if (fifo == (void *)-1) {
+        perror("shmat superviseur");
+        exit(1);
+    }
+
+    fifo_init(fifo);  // Initialisation FIFO
     log_message("✅ FIFO initialisée dans la mémoire partagée");
+
+    // Lancement thread ordonnanceur
+    pthread_t ord_thread;
+    if (pthread_create(&ord_thread, NULL, thread_ordonnanceur, NULL) != 0) {
+        perror("pthread_create ordonnanceur");
+        exit(1);
+    }
+    pthread_detach(ord_thread);
 
     // Socket serveur
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -148,5 +195,8 @@ int main() {
         pthread_detach(thread_id);
     }
 
+    // Ne sera jamais atteint normalement
+    shmdt(fifo);
+    shmctl(shmid, IPC_RMID, NULL);
     return 0;
 }

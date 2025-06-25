@@ -98,11 +98,11 @@ app.layout = dbc.Container([
 
     html.Div(id='selected-process', style={'color': COLOR_TEXT, 'marginTop': '20px'}),
 
-    html.Button("🛑 Terminer le processus sélectionné", id='terminate-button', n_clicks=0,
+    html.Button("Terminer le processus sélectionné", id='terminate-button', n_clicks=0,
                 style={'backgroundColor': '#FE277E', 'color': '#FFFFFF', 'marginTop': '20px', 'padding': '10px 20px', 'borderRadius': '5px'}),
 
     html.Br(),
-    html.Button("⬇️ Exporter vers CSV", id='export-button', n_clicks=0,
+    html.Button("⬇ Exporter vers CSV", id='export-button', n_clicks=0,
                 style={'marginTop': '20px', 'backgroundColor': '#47EAD0', 'color': 'black'}),
     html.Div(id='export-status', style={'color': COLOR_TEXT, 'marginTop': '10px'}),
 
@@ -167,9 +167,9 @@ def terminate_selected(n_clicks, pid, killed_pids):
         try:
             os.kill(int(pid), signal.SIGKILL)
             killed_pids.append(pid)
-            return killed_pids, f"✅ Processus PID {pid} terminé."
+            return killed_pids, f" Processus PID {pid} terminé."
         except Exception as e:
-            return killed_pids, f"❌ Erreur lors de la terminaison du processus {pid} : {e}"
+            return killed_pids, f" Erreur lors de la terminaison du processus {pid} : {e}"
     return killed_pids, "❗ Aucun processus sélectionné."
 
 @app.callback(
@@ -193,7 +193,7 @@ def export_to_csv(n):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"moniteur_export_{timestamp}.csv"
     df.to_csv(filename, index=False)
-    return f"✅ Données exportées dans le fichier : {filename}"
+    return f" Données exportées dans le fichier : {filename}"
 
 # === CALLBACK ORDONNANCEUR FIFO ===
 

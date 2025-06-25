@@ -1,44 +1,45 @@
 CC = gcc
 CFLAGS = -Wall -pthread
 
-# Superviseur
-SUPERVISEUR_SRC = superviseur/sscd_superviseur.c
+# Binaries
 SUPERVISEUR_BIN = sscd_superviseur
-
-# Modules utilisés
-ORDO_OBJ = ordonnanceur/ordonnanceur_fifo.o
-FIFO_OBJ = common/fifo.o
-
-# Ajout Tâche
-TESTS_SRC = tests/ajout_tache.c
 TESTS_BIN = ajout_tache
-
-# Moniteur Système
-MONITEUR_SRC = moniteur/moniteur_systeme.c
 MONITEUR_BIN = moniteur_systeme
 
-# Cible principale
+# Sources
+SUPERVISEUR_SRC = superviseur/sscd_superviseur.c
+ORDO_LOGIC_SRC = ordonnanceur/ordonnanceur_logic.c
+TESTS_SRC = tests/ajout_tache.c
+MONITEUR_SRC = moniteur/moniteur_systeme.c
+FIFO_SRC = common/fifo.c
+
+# Objets
+ORDO_LOGIC_OBJ = ordonnanceur/ordonnanceur_logic.o
+FIFO_OBJ = common/fifo.o
+
+# Compilation globale
 all: $(SUPERVISEUR_BIN) $(TESTS_BIN) $(MONITEUR_BIN)
 
-# Superviseur : compilation avec modules ordonnanceur et fifo
-$(SUPERVISEUR_BIN): $(SUPERVISEUR_SRC) $(ORDO_OBJ) $(FIFO_OBJ)
+# Superviseur : utilise ordonnanceur_fifo() sans main
+$(SUPERVISEUR_BIN): $(SUPERVISEUR_SRC) $(ORDO_LOGIC_OBJ) $(FIFO_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Compilation des modules en objets
-$(ORDO_OBJ): ordonnanceur/ordonnanceur_fifo.c ordonnanceur/ordonnanceur_fifo.h
-	$(CC) $(CFLAGS) -c $< -o $@
+# Moniteur : aussi dépendant de ordonnanceur_fifo()
+$(MONITEUR_BIN): $(MONITEUR_SRC) $(ORDO_LOGIC_OBJ) $(FIFO_OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-$(FIFO_OBJ): common/fifo.c common/fifo.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Ajout de tâche (indépendant, mais lié à FIFO)
+# Test indépendant (ajout_tache) — pas besoin de ordonnanceur
 $(TESTS_BIN): $(TESTS_SRC) $(FIFO_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Moniteur système (ajoute ordonnanceur_fifo.o et fifo.o pour linker)
-$(MONITEUR_BIN): $(MONITEUR_SRC) $(ORDO_OBJ) $(FIFO_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+# Objets
+$(ORDO_LOGIC_OBJ): ordonnanceur/ordonnanceur_logic.c ordonnanceur/ordonnanceur_fifo.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(FIFO_OBJ): $(FIFO_SRC) common/fifo.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Nettoyage
 clean:
-	rm -f $(SUPERVISEUR_BIN) $(TESTS_BIN) $(MONITEUR_BIN) $(ORDO_OBJ) $(FIFO_OBJ)
+	rm -f $(SUPERVISEUR_BIN) $(TESTS_BIN) $(MONITEUR_BIN) \
+	      $(ORDO_LOGIC_OBJ) $(FIFO_OBJ)
